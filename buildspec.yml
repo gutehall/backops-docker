@@ -1,0 +1,32 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      docker: 19
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Cloning Backstage repository...
+      - git clone https://github.com/backstage/backstage.git
+      - cd backstage
+      - echo Copying Dockerfile...
+      - cp ../backstage/Dockerfile .
+      - echo Inserting app-config.yaml...
+      - cp ../backstage/app-config.yaml .
+      - echo Building the Docker image...
+      - docker build -t backops .
+      - docker tag backops:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/backops:latest
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/backops:latest
+
+artifacts:
+  files:
+    - '**/*'
