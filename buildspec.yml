@@ -15,9 +15,9 @@ phases:
       - git clone https://github.com/backstage/backstage.git
       - cd backstage
       - echo Copying Dockerfile...
-      - cp ../backstage/Dockerfile .
+      - cp ../Dockerfile .
       - echo Inserting app-config.yaml...
-      - cp ../backstage/app-config.yaml .
+      - cp ../app-config.yaml .
       - echo Building the Docker image...
       - docker build -t backops .
       - docker tag backops:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/backops:latest
